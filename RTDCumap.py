@@ -26,7 +26,8 @@ blood_image, blood_df_parameters = loadparams(csvfilename = fname)
 blood_image_cropped = blood_image[:, 12:36, :, :]                             #crops the image
 blood_image_cropped1 = blood_image[1::3, 12:36, :, :]
 blood_image_cropped2 = blood_image[2::3, 12:36, :, :]                           #takes every 3rd line  
-blood_image_new = np.squeeze(blood_image_cropped2)                              #remove single dimension
+blood_image_new = np.squeeze(blood_image_cropped1)                              #remove single dimension
+blood_image_new2 = np.squeeze(blood_image_cropped2)        
 
 blood_labels = blood_df_parameters['Label'].map({0:'lym', 1:'eos', 2:'mono', 3:'neut', 4:'bgran', 5:'rbc', 6:'deb'})
 blood_labels1 = blood_labels[1::3]                                               # corresponding labels if every 3rd line is taken
@@ -42,6 +43,12 @@ num_examples = blood_image_new.shape[0]
 num_px = blood_image_new.shape[1]*blood_image_new.shape[2]
 blood_image_new_flat=np.zeros((num_examples,num_px))
 blood_image_new_flat= np.array(blood_image_new/255).reshape(num_examples,num_px)
+
+num_examples2 = blood_image_new2.shape[0]
+num_px2 = blood_image_new2.shape[1]*blood_image_new.shape[2]
+blood_image_new_flat2= np.zeros((num_examples2,num_px2))
+blood_image_new_flat2= np.array(blood_image_new2/255).reshape(num_examples2,num_px2)
+
 #blood_image_new_flat= np.array(blood_image_new).flatten()
 print("------------Array flattened------------------")
 
@@ -61,10 +68,14 @@ import umap
 reducer = umap.UMAP(n_neighbors=15)
 print("------------UMAP imported------------------")
 
+
+##############################################################################################
+################################## first embedding #############################################
+
 #embed and time
 import time
 start = time. time()
-embedding = reducer.fit_transform(blood_image_new_flat, y=blood_labels_numbers2)
+embedding = reducer.fit_transform(blood_image_new_flat, y=blood_labels_numbers1)
 #embedding = reducer.fit_transform(blood_image_new_flat)
 embedding.shape
 end = time. time()
@@ -72,10 +83,10 @@ print("------------UMAP embedding finished, embedding time = ------------------"
 print(end - start)
 
 #scatter plot of embedding
-sns.scatterplot(embedding[:, 0], embedding[:, 1], hue = blood_labels2, marker='o', size=1)
-
+#sns.scatterplot(embedding[:, 0], embedding[:, 1], hue = blood_labels2, marker='o', size=1)
 
 ##############################################################################################
+
 #mouseover tooltips of images
 from io import BytesIO
 from PIL import Image
@@ -93,11 +104,11 @@ from bokeh.models import ColumnDataSource, CategoricalColorMapper
 from bokeh.palettes import Set1
 
 bloodembedding_df = pd.DataFrame(embedding, columns=('x', 'y'))
-bloodembedding_df['digit'] = [str(x) for x in blood_labels_numbers2]
+bloodembedding_df['digit'] = [str(x) for x in blood_labels_numbers1]
 bloodembedding_df['image'] = list(map(embeddable_image, blood_image_new))
 
 
-output_file("testbokeh.html")
+output_file("learned_embedding.html")
 datasource = ColumnDataSource(bloodembedding_df)
 color_mapping = CategoricalColorMapper(factors=['0', '1', '2', '3', '4', '5', '6'],
                                        palette=Set1[7])
@@ -131,6 +142,69 @@ plot_figure.circle(
     'x',
     'y',
     source=datasource,
+    color=dict(field='digit', transform=color_mapping),
+    line_alpha=0.6,
+    fill_alpha=0.6,
+    size=4
+    )
+
+show(plot_figure)
+
+bloodembedding_df_1=bloodembedding_df
+
+
+
+##############################################################################################
+################################## new embedding #############################################
+
+#embed and time
+import time
+start = time. time()
+test_embedding = embedding.transform(blood_image_new_flat2)
+test_embedding.shape
+end = time. time()
+print("------------UMAP embedding finished, embedding time = ------------------")
+print(end - start)
+
+
+##############################################################################################
+
+bloodembedding_df_test = pd.DataFrame(test_embedding, columns=('x', 'y'))
+bloodembedding_df_test['digit'] = [str(x) for x in blood_labels_numbers2]
+bloodembedding_df_test['image'] = list(map(embeddable_image, blood_image_new2))
+
+
+output_file("newly_embedded_points.html")
+datasource2 = ColumnDataSource(bloodembedding_df_test)
+color_mapping = CategoricalColorMapper(factors=['0', '1', '2', '3', '4', '5', '6'],
+                                       palette=Set1[7])
+
+tooltips1="""
+<div>
+    <div>
+        <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>
+    </div>
+    <div>
+        <span style='font-size: 16px; color: #224499'>Label:</span>
+        <span style='font-size: 18px'>@digit</span>
+    </div>
+</div>
+"""
+
+
+plot_figure = figure(
+    title='UMAP projection of the dataset',
+    plot_width=600,
+    plot_height=600,
+    tools=('pan, wheel_zoom, reset'),
+    tooltips = tooltips1
+    )
+
+
+plot_figure.circle(
+    'x',
+    'y',
+    source=datasource2,
     color=dict(field='digit', transform=color_mapping),
     line_alpha=0.6,
     fill_alpha=0.6,
