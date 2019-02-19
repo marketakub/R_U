@@ -26,28 +26,33 @@ def framecapture(videofilename):
     h = frame.shape[1]
     d = frame.shape[2]
     print(framecount, w, h, d)
-    framearray = np.empty((framecount, w, h, d), dtype=frame.dtype)
-    i=1
+    framearray = np.empty((framecount, w, h), dtype=frame.dtype)
+    i=0
     
     while(cap.isOpened()):
         ret, frame = cap.read()
         if ret==True:
             #image processing here
-            _, framearray[i] = cap.read()
+            _, frame = cap.read()
+            framearray[i]= frame[:, :, 0]
             i=i+1
-        #img = cv2.flip(frame,1)   # flip left-right  
-        #img = cv2.flip(img,0)     # flip up-down
-        #cv2.imshow('frame',frame)                                              # show the video
+            print(i)
+            #img = cv2.flip(frame,1)   # flip left-right  
+            #img = cv2.flip(img,0)     # flip up-down
+            #cv2.imshow('frame',frame)                                              # show the video
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-            else:
-                break
+        else:
+            break
     cap.release()
     cv2.destroyAllWindows()
     print("------------Video loaded------------------")
     return[framearray]
 
 loaded_frames = framecapture(videofilename = vfname)
+
+
+
 
 
 ##################################################################################
