@@ -20,29 +20,32 @@ vfname = (r"D:\Germany\UMAP_repo\20180211_3_56_19-M1.avi")
 def framecapture(videofilename):
     
     cap = cv2.VideoCapture(videofilename)
+    framecount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    ret, frame = cap.read()
+    w = frame.shape[0]
+    h = frame.shape[1]
+    d = frame.shape[2]
+    print(framecount, w, h, d)
+    framearray = np.empty((framecount, w, h, d), dtype=frame.dtype)
+    i=1
     
     while(cap.isOpened()):
         ret, frame = cap.read()
         if ret==True:
             #image processing here
+            _, framearray[i] = cap.read()
+            i=i+1
         #img = cv2.flip(frame,1)   # flip left-right  
         #img = cv2.flip(img,0)     # flip up-down
-        #print(ret)
-        #print(np.shape(frame_gray))
-        #plt.imshow(frame_gray)
-        
-            #cv2.imshow('frame',frame)              # show the video
+        #cv2.imshow('frame',frame)                                              # show the video
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
             else:
                 break
-
     cap.release()
     cv2.destroyAllWindows()
-    
     print("------------Video loaded------------------")
-    return[frame]
-
+    return[framearray]
 
 loaded_frames = framecapture(videofilename = vfname)
 
