@@ -7,18 +7,25 @@ import pandas as pd
 import cv2
 
 
+vfname = (r"D:\Germany\UMAP_repo\20180211_3_56_19-M1.avi")
 
-cap = cv2.VideoCapture("20180211_3_56_19-M1.avi")
-ret, frame = cap.read()
-frame_gray = frame[:, :, 0]
-print(ret)
-print(np.shape(frame_gray))
-plt.imshow(frame_gray)
-print("------------Video loaded------------------")
 
+def loadvideo(videofilename):
+    cap = cv2.VideoCapture(videofilename)
+    ret, frame = cap.read()
+    frame_gray = frame[:, :, 0]
+    print(ret)
+    print(np.shape(frame_gray))
+    plt.imshow(frame_gray)
+    print("------------Video loaded------------------")
+    return[ret,frame_gray]
+
+ret1, frames = loadvideo(videofilename = vfname)
+
+
+##################################################################################
 
 fname = (r"D:\Germany\Blood-Data from Maik\001_DataSet\Lym_Eos_Mono_Neut_BGran_RBC_Deb_20180904_DataFrame_Train.csv")
-
 
 #function to load excel file with parameters and .npy dataframe with images
 def loadparams(csvfilename):
