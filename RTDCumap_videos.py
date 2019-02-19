@@ -9,18 +9,42 @@ import cv2
 
 vfname = (r"D:\Germany\UMAP_repo\20180211_3_56_19-M1.avi")
 
+#cap = cv2.VideoCapture(vfname)    
+#ret, frame = cap.read()
+#frame_gray = frame[:, :, 0]
+#        #print(ret)
+#        #print(np.shape(frame_gray))
+#        #plt.imshow(frame_gray)
 
-def loadvideo(videofilename):
+
+def framecapture(videofilename):
+    
     cap = cv2.VideoCapture(videofilename)
-    ret, frame = cap.read()
-    frame_gray = frame[:, :, 0]
-    print(ret)
-    print(np.shape(frame_gray))
-    plt.imshow(frame_gray)
-    print("------------Video loaded------------------")
-    return[ret,frame_gray]
+    
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if ret==True:
+            #image processing here
+        #img = cv2.flip(frame,1)   # flip left-right  
+        #img = cv2.flip(img,0)     # flip up-down
+        #print(ret)
+        #print(np.shape(frame_gray))
+        #plt.imshow(frame_gray)
+        
+            #cv2.imshow('frame',frame)              # show the video
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            else:
+                break
 
-ret1, frames = loadvideo(videofilename = vfname)
+    cap.release()
+    cv2.destroyAllWindows()
+    
+    print("------------Video loaded------------------")
+    return[frame]
+
+
+loaded_frames = framecapture(videofilename = vfname)
 
 
 ##################################################################################
