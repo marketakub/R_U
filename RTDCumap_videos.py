@@ -7,14 +7,8 @@ import pandas as pd
 import cv2
 
 
-vfname = (r"D:\Germany\UMAP_repo\20180211_3_56_19-M1.avi")
-
-#cap = cv2.VideoCapture(vfname)    
-#ret, frame = cap.read()
-#frame_gray = frame[:, :, 0]
-#        #print(ret)
-#        #print(np.shape(frame_gray))
-#        #plt.imshow(frame_gray)
+#################################################################################################
+######################################## load video #############################################
 
 
 def framecapture(videofilename):
@@ -49,13 +43,45 @@ def framecapture(videofilename):
     print("------------Video loaded------------------")
     return[framearray]
 
-loaded_frames = framecapture(videofilename = vfname)
+frames_Bcells = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_Bcells.avi")
 
 
+#vfname = (r"D:\Germany\UMAP_repo\20180211_3_56_19-M1.avi")
+#loaded_frames = framecapture(videofilename = vfname)
 
 
+frames_unknown = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_45_19_unknown.avi")
+frames_basos_ex = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_basos_ex.avi")
+frames_Bcells = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_Bcells.avi")
+frames_CD3neg_NK = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_CD3neg_NK.avi")
+frames_CD3pos_NK = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_CD3pos_NK.avi")
+frames_debris = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_debris.avi")
+frames_eos = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_eos.avi")
+frames_ery = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_ery.avi")
+frames_erydub = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_erydub.avi")
+frames_lymphos_ex = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_lymphos_ex.avi")
+frames_monos = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_mono.avi")
+frames_neutro = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_neutro.avi")
+frames_Tcells = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_Tcells.avi")
 
-##################################################################################
+
+px_res = 0.34
+test_df = pd.read_csv(r'D:\Germany\UMAP_repo\20180211_3_56_19_Bcells.tsv', delimiter="\t", encoding='unicode_escape')
+test_df2 = test_df['pos_x']
+test_df2b = test_df2[1:]
+test_df2c = test_df2b/px_res
+
+print(test_df2b.dtype)
+test_df2bb = test_df2b.astype('float64')
+print(test_df2bb.dtype)
+test_df2c = test_df2bb/px_res
+
+
+test_df3 = test_df['pos_y']
+
+
+#################################################################################################
+################################### load dataframes #############################################
 
 fname = (r"D:\Germany\Blood-Data from Maik\001_DataSet\Lym_Eos_Mono_Neut_BGran_RBC_Deb_20180904_DataFrame_Train.csv")
 
@@ -117,7 +143,7 @@ reducer = umap.UMAP(n_neighbors=15)
 print("------------UMAP imported------------------")
 
 
-###############################################################################################
+#################################################################################################
 ################################### first embedding #############################################
 #
 ##embed and time
