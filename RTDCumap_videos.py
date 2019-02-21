@@ -14,34 +14,6 @@ import imageio
 
 def framecapture(filename):
     
-#    cap = cv2.VideoCapture(videofilename)
-#    framecount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-#    ret, frame = cap.read()
-#    w = frame.shape[0]
-#    h = frame.shape[1]
-#    d = frame.shape[2]
-#    print(framecount, w, h, d)
-#    framearray = np.empty((framecount, w, h), dtype=frame.dtype)
-#    i=0
-#    
-#    while(cap.isOpened()):
-#        ret, frame = cap.read()
-#        if ret==True:
-#            #image processing here
-#            _, frame = cap.read()
-#            framearray[i]= frame[:, :, 0]
-#            i=i+1
-#            print(i)
-#            #img = cv2.flip(frame,1)   # flip left-right  
-#            #img = cv2.flip(img,0)     # flip up-down
-#            #cv2.imshow('frame',frame)                                              # show the video
-#            if i == 876:
-#                break
-#        else:
-#            break
-#    cap.release()
-#    cv2.destroyAllWindows()
-#    print("------------Video loaded------------------")
     
     videofilename = filename.replace(".",".avi")
     tsvfilename = filename.replace(".",".tsv")
@@ -55,15 +27,38 @@ def framecapture(filename):
     pix = 0.34
     
     Images = []
+    IMS = []
+    
     for idx in range(nr_of_images):
         cellimg = cap.get_data(idx)
         cellimg = cellimg[:,:,0]
-        Images.append(cellimg)
+        
+        pos_x = round(float(df["pos_x"].iloc[idx])/pix)
+        pos_y = round(float(df["pos_y"].iloc[idx])/pix)
+        #print(pos_x, pos_y)
+        
+        cellimg_cropped = cellimg[pos_y-12:pos_y+12,pos_x-17:pos_x+17]
+        #cellimg_cropped = cellimg[pos_y-16:pos_y+16,pos_x-30:pos_x+30]
+        cellimg_cropped_flattened = cellimg_cropped.flatten()
+        cellimg_cropped_flattened = cellimg_cropped_flattened/255
+        
+        Images.append(cellimg_cropped_flattened)
+        IMS.append(cellimg_cropped)
+        
+#        cellimg_cropped_flattened_pd=pd.DataFrame(cellimg_cropped_flattened)
+#        print(cellimg_cropped_flattened_pd)
+#        
+#        if pd.isnull(cellimg_cropped_flattened_pd).any:
+#            i = cellimg_cropped_flattened_pd
+#            print("List is empty") 
+#        else:
+#            #print("OK")
+#            Images.append(cellimg_cropped_flattened_pd) 
+        
+        #Images.append(cellimg_cropped)
+        #Images.append(cellimg)
         #Images = np.array(Images)
         
-
-
-
     #read_csv('file', encoding = "ISO-8859-1")
 #    i = 2
 #    img = Images[i]
@@ -74,153 +69,57 @@ def framecapture(filename):
 #    plt.scatter(pos_x,pos_y,c='w')
     
     #return[framearray]
-    Images.append(df)
-    return[Images, df]
+    #Images.append(df)
+    plt.imshow(cellimg_cropped)
+    #plt.scatter(pos_x,pos_y,c='w')
+    Images=pd.DataFrame(Images)
+    
+    return[Images, nr_of_images, IMS]
+    #return[Images, df]
 
-
-
-
-
-
-frames_unknown, labels_unknown = framecapture(r"D:\Germany\UMAP_repo\20180211_3_45_19_unknown.")
-frames_basos_ex, labels_basos_ex = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_basos_ex.")
-frames_Bcells, labels_Bcells = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_Bcells.")
-frames_CD3neg_NK, labels_CD3neg_NK = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_CD3neg_NK.")
-frames_CD3pos_NK, labels_CD3pos_NK = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_CD3pos_NK.")
-frames_debris, labels_debris = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_debris.")
-frames_eos, labels_eos = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_eos.")
-frames_ery, labels_ery = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_ery.")
-frames_erydub, labels_erydub = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_erydub.")
-frames_lymphos_ex, labels_lymphos_ex = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_lymphos_ex.")
-frames_monos, labels_monos = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_mono.")
-frames_neutro, labels_neutro = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_neutro.")
-frames_Tcells, labels_Tcells = framecapture(r"D:\Germany\UMAP_repo\20180211_3_56_19_Tcells.")
-
-
-
-
-
-#frames_Bcells = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_Bcells.avi")
-
-
-#vfname = (r"D:\Germany\UMAP_repo\20180211_3_56_19-M1.avi")
-#loaded_frames = framecapture(videofilename = vfname)
-
-
-#frames_unknown = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_45_19_unknown.avi")
-#frames_basos_ex = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_basos_ex.avi")
-#frames_Bcells = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_Bcells.avi")
-#frames_CD3neg_NK = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_CD3neg_NK.avi")
-#frames_CD3pos_NK = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_CD3pos_NK.avi")
-#frames_debris = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_debris.avi")
-#frames_eos = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_eos.avi")
-#frames_ery = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_ery.avi")
-#frames_erydub = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_erydub.avi")
-#frames_lymphos_ex = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_lymphos_ex.avi")
-#frames_monos = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_mono.avi")
-#frames_neutro = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_neutro.avi")
-#frames_Tcells = framecapture(videofilename = r"D:\Germany\UMAP_repo\20180211_3_56_19_Tcells.avi")
-
-
-
-px_res = 0.34
-test_df = pd.read_csv(r'D:\Germany\UMAP_repo\20180211_3_56_19_Bcells.tsv', delimiter="\t", encoding='unicode_escape')
-test_df2 = test_df['pos_x']
-test_df2b = test_df2[1:]
-test_df2bb = test_df2b.astype('float64')
-print(test_df2bb.dtype)
-test_df2c = test_df2bb/px_res
-
-
-Bcells=frames_Bcells[0]
-#show some images (set to RBC)
-fig, ax_array = plt.subplots(3, 3)
-axes = ax_array.flatten()
-for i, ax in enumerate(axes):
-    ax.imshow(Bcells[i,:,:], cmap='gray_r')
-plt.setp(axes, xticks=[], yticks=[], frame_on=False)
-plt.tight_layout(h_pad=0.01, w_pad=0.01)
-print("------------Images shown------------------")
-
-
-test_df3 = test_df['pos_y']
-
-
-#
 #plt.figure()
-#plt.imshow(Bcells[0,:,:])
+#plt.imshow(frames_unknown[2])
 #plt.figure()
-#plt.imshow(Bcells[1,:,:])
-#plt.figure()
-#plt.imshow(Bcells[2,:,:])
-#plt.figure()
-#plt.imshow(Bcells[3,:,:])
-#plt.figure()
-#plt.imshow(Bcells[4,:,:])
-#plt.figure()
-#plt.imshow(Bcells[5,:,:])
+#plt.imshow(frames_unknown[160])
+    
+
+
+frames_unknown, labels_unknown, IMS_unknown = framecapture(r"E:\UMAP_repo\20180211_3_45_19_unknown.")
+frames_basos_ex, labels_basos_ex, IMS_basos_ex = framecapture(r"E:\UMAP_repo\20180211_3_56_19_basos_ex.")
+frames_Bcells, labels_Bcells, IMS_Bcells = framecapture(r"E:\UMAP_repo\20180211_3_56_19_Bcells.")
+frames_CD3neg_NK, labels_CD3neg_NK, IMS_CD3neg_NK = framecapture(r"E:\UMAP_repo\20180211_3_56_19_CD3neg_NK.")
+frames_CD3pos_NK, labels_CD3pos_NK, IMS_CD3pos_NK = framecapture(r"E:\UMAP_repo\20180211_3_56_19_CD3pos_NK.")
+frames_debris, labels_debris, IMS_debris = framecapture(r"E:\UMAP_repo\20180211_3_56_19_debris.")
+frames_eos, labels_eos, IMS_eos = framecapture(r"E:\UMAP_repo\20180211_3_56_19_eos.")
+frames_ery, labels_ery, IMS_ery = framecapture(r"E:\UMAP_repo\20180211_3_56_19_ery.")
+frames_erydub, labels_erydub, IMS_erydub = framecapture(r"E:\UMAP_repo\20180211_3_56_19_erydub.")
+frames_lymphos_ex, labels_lymphos_ex, IMS_lymphos_ex = framecapture(r"E:\UMAP_repo\20180211_3_56_19_lymphos_ex.")
+frames_monos, labels_monos, IMS_monos = framecapture(r"E:\UMAP_repo\20180211_3_56_19_mono.")
+frames_neutro, labels_neutro, IMS_neutro = framecapture(r"E:\UMAP_repo\20180211_3_56_19_neutro.")
+frames_Tcells, labels_Tcells, IMS_Tcells = framecapture(r"E:\UMAP_repo\20180211_3_56_19_Tcells.")
+
+frames_unknown2, labels_unknown2, IMS_unknown2 = framecapture(r"E:\UMAP_repo\20180211_14_45_sig8_unknown2.")
 
 
 
+frames = [frames_Bcells,frames_CD3neg_NK, frames_debris, frames_eos, frames_ery, frames_erydub, frames_monos, frames_neutro, frames_Tcells]
+all_frames = pd.concat(frames)
+all_labels=np.concatenate((np.zeros(labels_Bcells), np.zeros(labels_CD3neg_NK)+1,np.zeros(labels_debris)+2, np.zeros(labels_eos)+3, np.zeros(labels_ery)+4, np.zeros(labels_erydub)+5, np.zeros(labels_monos)+6,np.zeros(labels_neutro)+7, np.zeros(labels_Tcells)+8
+))
+frames_b= np.nan_to_num(all_frames)
 
 
+#images = [IMS_Bcells, IMS_CD3neg_NK, IMS_debris, IMS_eos, IMS_ery, IMS_erydub, IMS_monos, IMS_neutro, IMS_Tcells]
+#images = pd.DataFrame(images)
+#all_images = pd.concat(images)
 
 
-#################################################################################################
-################################### load dataframes #############################################
-
-fname = (r"D:\Germany\Blood-Data from Maik\001_DataSet\Lym_Eos_Mono_Neut_BGran_RBC_Deb_20180904_DataFrame_Train.csv")
-
-#function to load excel file with parameters and .npy dataframe with images
-def loadparams(csvfilename):
-    "This will load parameters from the excel file"
-    DFname = csvfilename
-    DF = pd.read_csv(DFname, index_col=0)
-    Xname = csvfilename.replace("DataFrame_Train.csv","Images_Train.npy")
-    X = np.load(Xname)
-    print("------------Data loaded------------------")
-    return[X,DF]
-
-
-blood_image, blood_df_parameters = loadparams(csvfilename = fname)
-blood_image_cropped = blood_image[:, 12:36, :, :]                             #crops the image
-blood_image_cropped1 = blood_image[1::3, 12:36, :, :]
-blood_image_cropped2 = blood_image[2::3, 12:36, :, :]                           #takes every 3rd line  
-blood_image_new = np.squeeze(blood_image_cropped1)                              #remove single dimension
-blood_image_new2 = np.squeeze(blood_image_cropped2)        
-
-blood_labels = blood_df_parameters['Label'].map({0:'lym', 1:'eos', 2:'mono', 3:'neut', 4:'bgran', 5:'rbc', 6:'deb'})
-blood_labels1 = blood_labels[1::3]                                               # corresponding labels if every 3rd line is taken
-blood_labels2 = blood_labels[2::3]  
-
-blood_labels_numbers = blood_df_parameters['Label']
-blood_labels_numbers1 = blood_labels_numbers[1::3]                               # only turn on when we want every 3rd event
-blood_labels_numbers2 = blood_labels_numbers[2::3]                               # other third of data
-
-#I want to create an array where 1 row = 1 image
-#first allocate matrix and then fill with reshaped array
-num_examples = blood_image_new.shape[0]
-num_px = blood_image_new.shape[1]*blood_image_new.shape[2]
-blood_image_new_flat=np.zeros((num_examples,num_px))
-blood_image_new_flat= np.array(blood_image_new/255).reshape(num_examples,num_px)
-
-num_examples2 = blood_image_new2.shape[0]
-num_px2 = blood_image_new2.shape[1]*blood_image_new.shape[2]
-blood_image_new_flat2= np.zeros((num_examples2,num_px2))
-blood_image_new_flat2= np.array(blood_image_new2/255).reshape(num_examples2,num_px2)
-
-#blood_image_new_flat= np.array(blood_image_new).flatten()
-print("------------Array flattened------------------")
-
-
-#show some images (set to RBC)
-fig, ax_array = plt.subplots(5, 8)
-axes = ax_array.flatten()
-for i, ax in enumerate(axes):
-    ax.imshow(blood_image_new[i+2100], cmap='gray_r')
-plt.setp(axes, xticks=[], yticks=[], frame_on=False)
-plt.tight_layout(h_pad=0.01, w_pad=0.01)
-print("------------Images shown------------------")
+frames_b_test = np.nan_to_num(frames_unknown)
+frames_b_test2 = np.nan_to_num(frames_unknown2)
+frames_b_CD3pos_NK = np.nan_to_num(frames_CD3pos_NK)
+all_labels_test = (np.zeros(labels_unknown))
+all_labels_test2 = (np.zeros(labels_unknown2))
+all_labels_CD3pos_NK = (np.zeros(labels_CD3pos_NK))
 
 
 #UMAP embedding
@@ -229,88 +128,6 @@ reducer = umap.UMAP(n_neighbors=15)
 print("------------UMAP imported------------------")
 
 
-#################################################################################################
-################################### first embedding #############################################
-#
-##embed and time
-#import time
-#start = time. time()
-#embedding = reducer.fit_transform(blood_image_new_flat, y=blood_labels_numbers1)
-##embedding = reducer.fit_transform(blood_image_new_flat)
-#embedding.shape
-#end = time. time()
-#print("------------UMAP embedding finished, embedding time = ------------------")
-#print(end - start)
-#
-##scatter plot of embedding
-##sns.scatterplot(embedding[:, 0], embedding[:, 1], hue = blood_labels2, marker='o', size=1)
-#
-###############################################################################################
-#
-##mouseover tooltips of images
-#from io import BytesIO
-#from PIL import Image
-#import base64
-#def embeddable_image(data):
-#    img_data = data.astype(np.uint8)
-#    #image = Image.fromarray(img_data, mode='L').resize((64, 64), Image.BICUBIC)
-#    image = Image.fromarray(img_data, mode='L')
-#    buffer = BytesIO()
-#    image.save(buffer, format='png')
-#    for_encoding = buffer.getvalue()
-#    return 'data:image/png;base64,' + base64.b64encode(for_encoding).decode()
-#from bokeh.plotting import figure, show, output_file
-#from bokeh.models import ColumnDataSource, CategoricalColorMapper
-#from bokeh.palettes import Set1
-#
-#bloodembedding_df = pd.DataFrame(embedding, columns=('x', 'y'))
-#bloodembedding_df['digit'] = [str(x) for x in blood_labels_numbers1]
-#bloodembedding_df['image'] = list(map(embeddable_image, blood_image_new))
-#
-#
-#output_file("learned_embedding.html")
-#datasource = ColumnDataSource(bloodembedding_df)
-#color_mapping = CategoricalColorMapper(factors=['0', '1', '2', '3', '4', '5', '6'],
-#                                       palette=Set1[7])
-#
-##factors=['lym', 'eos', 'mono', 'neut', 'bgran', 'rbc', 'debris']
-#
-#tooltips1="""
-#<div>
-#    <div>
-#        <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>
-#    </div>
-#    <div>
-#        <span style='font-size: 16px; color: #224499'>Label:</span>
-#        <span style='font-size: 18px'>@digit</span>
-#    </div>
-#</div>
-#"""
-#
-#
-#plot_figure = figure(
-#    title='UMAP projection of the dataset',
-#    plot_width=600,
-#    plot_height=600,
-#    tools=('pan, wheel_zoom, reset'),
-#    tooltips = tooltips1
-#    )
-#
-#
-#
-#plot_figure.circle(
-#    'x',
-#    'y',
-#    source=datasource,
-#    color=dict(field='digit', transform=color_mapping),
-#    line_alpha=0.6,
-#    fill_alpha=0.6,
-#    size=4
-#    )
-#
-#show(plot_figure)
-#
-#bloodembedding_df_1=bloodembedding_df
 
 ##############################################################################################
 ################################## first embedding #############################################
@@ -318,7 +135,8 @@ print("------------UMAP imported------------------")
 #embed and time
 import time
 start = time. time()
-embedding = reducer.fit(blood_image_new_flat, blood_labels_numbers1)
+embedding = reducer.fit(frames_b, all_labels)
+#embedding = reducer.fit(all_frames, all_labels)
 #embedding = reducer.fit_transform(blood_image_new_flat)
 end = time. time()
 print("------------UMAP embedding finished, embedding time = ------------------")
@@ -336,7 +154,7 @@ import base64
 def embeddable_image(data):
     img_data = data.astype(np.uint8)
     #image = Image.fromarray(img_data, mode='L').resize((64, 64), Image.BICUBIC)
-    image = Image.fromarray(img_data, mode='L')
+    image = Image.fromarray(img_data, mode='L').resize((102,72))
     buffer = BytesIO()
     image.save(buffer, format='png')
     for_encoding = buffer.getvalue()
@@ -344,18 +162,23 @@ def embeddable_image(data):
 from bokeh.plotting import figure, show, output_file
 from bokeh.models import ColumnDataSource, CategoricalColorMapper
 from bokeh.palettes import Set1
+from bokeh.palettes import Paired
+
+reshaped_all=all_frames.values.reshape(50076,24,34)
+reshaped_all=reshaped_all*255+60
+plt.imshow(reshaped_all[0,:,:])
 
 bloodembedding_df = pd.DataFrame(embedding.embedding_, columns=('x', 'y'))
-bloodembedding_df['digit'] = [str(x) for x in blood_labels_numbers1]
-bloodembedding_df['image'] = list(map(embeddable_image, blood_image_new))
+#bloodembedding_df['digit'] = all_labels
+bloodembedding_df['digit'] = [str(x) for x in all_labels]
+bloodembedding_df['image'] = list(map(embeddable_image, reshaped_all))
 
+print(bloodembedding_df['digit'].dtype)
 
 output_file("learned_embedding.html")
 datasource = ColumnDataSource(bloodembedding_df)
-color_mapping = CategoricalColorMapper(factors=['0', '1', '2', '3', '4', '5', '6'],
-                                       palette=Set1[7])
-
-#factors=['lym', 'eos', 'mono', 'neut', 'bgran', 'rbc', 'debris']
+color_mapping = CategoricalColorMapper(factors=['0.0', '1.0', '2.0', '3.0', '4.0' '5.0', '6.0', '7.0', '8.0'],
+                                       palette=Paired[9])
 
 tooltips1="""
 <div>
@@ -368,18 +191,15 @@ tooltips1="""
     </div>
 </div>
 """
-
-
 plot_figure = figure(
     title='UMAP projection of the dataset',
     plot_width=600,
     plot_height=600,
     tools=('pan, wheel_zoom, reset'),
-    tooltips = tooltips1
+    tooltips = tooltips1,
+    x_range=[-15, -7],
+    y_range=[-1, 9]
     )
-
-
-
 plot_figure.circle(
     'x',
     'y',
@@ -392,7 +212,6 @@ plot_figure.circle(
 
 show(plot_figure)
 
-bloodembedding_df_1=bloodembedding_df
 
 ##############################################################################################
 ################################## new embedding #############################################
@@ -400,7 +219,7 @@ bloodembedding_df_1=bloodembedding_df
 #embed and time
 import time
 start = time. time()
-test_embedding = embedding.transform(blood_image_new_flat2)
+test_embedding = embedding.transform(frames_b_test)
 end = time. time()
 print("------------UMAP embedding finished, embedding time = ------------------")
 print(end - start)
@@ -408,16 +227,38 @@ print(end - start)
 
 ##############################################################################################
 
-bloodembedding_df_test = pd.DataFrame(test_embedding, columns=('x', 'y'))
-bloodembedding_df_test['digit'] = [str(x) for x in blood_labels_numbers2]
-bloodembedding_df_test['image'] = list(map(embeddable_image, blood_image_new2))
+from bokeh.palettes import Oranges
 
+reshaped_unknown=frames_unknown.values.reshape(1150,24,34)
+reshaped_unknown=reshaped_unknown*255+60
+plt.imshow(reshaped_unknown[0,:,:])
+
+
+bloodembedding_df_test = pd.DataFrame(test_embedding, columns=('x', 'y'))
+bloodembedding_df_test['digit'] = [str(x) for x in all_labels_test]
+bloodembedding_df_test['image'] = list(map(embeddable_image, reshaped_unknown))
+
+
+#print(IMS_unknown("Size"))
+#Imgs = []
+#j = np.zeros(IMS_unknown[0].shape)
+#for x in range (0,10):
+#    j= IMS_unknown[x]
+#    #i = IMS_unknown[0]
+#    Imgs.append(j)
+#
+#i = IMS_unknown[0]
+#plt.imshow(i)
+
+
+#testimage = np.array(IMS_unknown)
+#img_data = testimage.astype(np.uint8)
+#image = Image.fromarray(img_data, mode='L')
 
 output_file("newly_embedded_points.html")
 datasource2 = ColumnDataSource(bloodembedding_df_test)
-color_mapping = CategoricalColorMapper(factors=['0', '1', '2', '3', '4', '5', '6'],
-                                       palette=Set1[7])
-
+color_mapping2 = CategoricalColorMapper(factors=['0.0'],
+                                       palette=Oranges[3])
 tooltips1="""
 <div>
     <div>
@@ -429,42 +270,304 @@ tooltips1="""
     </div>
 </div>
 """
-
-
-plot_figure = figure(
+plot_figure2 = figure(
     title='UMAP projection of the dataset',
     plot_width=600,
     plot_height=600,
     tools=('pan, wheel_zoom, reset'),
-    tooltips = tooltips1
+    tooltips = tooltips1,
+    x_range=[-22, 15],
+    y_range=[-12, 20]
     )
 
-
-plot_figure.circle(
+plot_figure2.circle(
     'x',
     'y',
     source=datasource2,
-    color=dict(field='digit', transform=color_mapping),
+    color=dict(field='digit', transform=color_mapping2),
     line_alpha=0.6,
     fill_alpha=0.6,
     size=4
     )
 
-show(plot_figure)
-
-bloodembedding_df_2=bloodembedding_df
+show(plot_figure2)
 
 
-
+###############################################################################################
 ##############################################################################################
-################################## new embedding - 1 point #############################################
+################################## new embedding - unkown 2 #############################################
 
-test=blood_image_new_flat2[0:1,:]
-test_embedding2 = np.zeros((1,2))
 #embed and time
 import time
 start = time. time()
-test_embedding2 = embedding.transform(test)
+test_embedding2 = embedding.transform(frames_b_test2)
 end = time. time()
 print("------------UMAP embedding finished, embedding time = ------------------")
 print(end - start)
+
+
+##############################################################################################
+
+from bokeh.palettes import Oranges
+
+reshaped_unknown2=frames_unknown2.values.reshape(668,24,34)
+reshaped_unknown2=reshaped_unknown2*255+60
+plt.imshow(reshaped_unknown2[0,:,:])
+
+
+bloodembedding_df_test = pd.DataFrame(test_embedding2, columns=('x', 'y'))
+bloodembedding_df_test['digit'] = [str(x) for x in all_labels_test2]
+bloodembedding_df_test['image'] = list(map(embeddable_image, reshaped_unknown2))
+
+
+output_file("Martins_unknown_2.html")
+datasource2 = ColumnDataSource(bloodembedding_df_test)
+color_mapping2 = CategoricalColorMapper(factors=['0.0'],
+                                       palette=Oranges[3])
+tooltips1="""
+<div>
+    <div>
+        <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>
+    </div>
+    <div>
+        <span style='font-size: 16px; color: #224499'>Label:</span>
+        <span style='font-size: 18px'>@digit</span>
+    </div>
+</div>
+"""
+plot_figure2 = figure(
+    title='UMAP projection of the dataset',
+    plot_width=600,
+    plot_height=600,
+    tools=('pan, wheel_zoom, reset'),
+    tooltips = tooltips1,
+    x_range=[-22, 15],
+    y_range=[-12, 20]
+    )
+
+plot_figure2.circle(
+    'x',
+    'y',
+    source=datasource2,
+    color=dict(field='digit', transform=color_mapping2),
+    line_alpha=0.6,
+    fill_alpha=0.6,
+    size=4
+    )
+
+show(plot_figure2)
+
+###############################################################################################
+###############################################################################################
+################################## new embedding - CD3+ NK #############################################
+
+#embed and time
+import time
+start = time. time()
+test_embedding3 = embedding.transform(frames_b_CD3pos_NK)
+end = time. time()
+print("------------UMAP embedding finished, embedding time = ------------------")
+print(end - start)
+
+
+##############################################################################################
+
+from bokeh.palettes import Oranges
+
+reshaped_CD3pos_NK=frames_CD3pos_NK.values.reshape(747,24,34)
+reshaped_CD3pos_NK=reshaped_CD3pos_NK*255+60
+plt.imshow(reshaped_CD3pos_NK[0,:,:])
+
+
+bloodembedding_df_test = pd.DataFrame(test_embedding3, columns=('x', 'y'))
+bloodembedding_df_test['digit'] = [str(x) for x in all_labels_CD3pos_NK]
+bloodembedding_df_test['image'] = list(map(embeddable_image, reshaped_CD3pos_NK))
+
+output_file("CD3pos_NK.html")
+datasource2 = ColumnDataSource(bloodembedding_df_test)
+color_mapping2 = CategoricalColorMapper(factors=['0.0'],
+                                       palette=Oranges[3])
+tooltips1="""
+<div>
+    <div>
+        <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>
+    </div>
+    <div>
+        <span style='font-size: 16px; color: #224499'>Label:</span>
+        <span style='font-size: 18px'>@digit</span>
+    </div>
+</div>
+"""
+plot_figure3 = figure(
+    title='UMAP projection of the dataset',
+    plot_width=600,
+    plot_height=600,
+    tools=('pan, wheel_zoom, reset'),
+    tooltips = tooltips1,
+    x_range=[-22, 15],
+    y_range=[-12, 20]
+    )
+
+plot_figure3.circle(
+    'x',
+    'y',
+    source=datasource2,
+    color=dict(field='digit', transform=color_mapping2),
+    line_alpha=0.6,
+    fill_alpha=0.6,
+    size=4
+    )
+
+show(plot_figure3)
+
+
+
+###############################################################################################
+###############################################################################################
+################################## new embedding - T-cells #############################################
+
+#load
+frames_Tcells2, labels_Tcells2, IMS_Tcells2 = framecapture(r"E:\UMAP_repo\20190208_CD3_CD56_CD19_Tcells2.")
+frames_b_Tcells2 = np.nan_to_num(frames_Tcells2)
+all_labels_Tcells2 = (np.zeros(labels_Tcells2))
+#all_labels_Tcells2.shape[0]
+reshaped_Tcells2=frames_Tcells2.values.reshape(all_labels_Tcells2.shape[0],24,34)
+reshaped_Tcells2=reshaped_Tcells2*255+60
+plt.imshow(reshaped_Tcells2[0,:,:])
+
+
+#embed and time
+import time
+start = time. time()
+test_embedding4 = embedding.transform(frames_b_Tcells2)
+end = time. time()
+print("------------UMAP embedding finished, embedding time = ------------------")
+print(end - start)
+
+
+##############################################################################################
+
+from bokeh.palettes import Oranges
+
+bloodembedding_df_test4 = pd.DataFrame(test_embedding4, columns=('x', 'y'))
+bloodembedding_df_test4['digit'] = [str(x) for x in all_labels_Tcells2]
+bloodembedding_df_test4['image'] = list(map(embeddable_image, reshaped_Tcells2))
+
+output_file("Tcells2.html")
+datasource4 = ColumnDataSource(bloodembedding_df_test4)
+color_mapping2 = CategoricalColorMapper(factors=['0.0'],
+                                       palette=Oranges[3])
+tooltips1="""
+<div>
+    <div>
+        <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>
+    </div>
+    <div>
+        <span style='font-size: 16px; color: #224499'>Label:</span>
+        <span style='font-size: 18px'>@digit</span>
+    </div>
+</div>
+"""
+plot_figure4 = figure(
+    title='UMAP projection of the dataset',
+    plot_width=600,
+    plot_height=600,
+    tools=('pan, wheel_zoom, reset'),
+    tooltips = tooltips1,
+    x_range=[-15, -7],
+    y_range=[-1, 9]
+    )
+
+plot_figure4.circle(
+    'x',
+    'y',
+    source=datasource4,
+    color=dict(field='digit', transform=color_mapping2),
+    line_alpha=0.6,
+    fill_alpha=0.6,
+    size=4
+    )
+
+show(plot_figure4)
+
+###############################################################################################
+###############################################################################################
+################################## new embedding - B-cells #############################################
+
+#load
+frames_Bcells2, labels_Bcells2, IMS_Bcells2 = framecapture(r"E:\UMAP_repo\20190208_CD3_CD56_CD19_Bcells2.")
+frames_b_Bcells2 = np.nan_to_num(frames_Bcells2)
+all_labels_Bcells2 = (np.zeros(labels_Bcells2))
+#all_labels_Tcells2.shape[0]
+reshaped_Bcells2=frames_Bcells2.values.reshape(all_labels_Bcells2.shape[0],24,34)
+reshaped_Bcells2=reshaped_Bcells2*255+60
+plt.imshow(reshaped_Bcells2[0,:,:])
+
+
+#embed and time
+import time
+start = time. time()
+test_embedding5 = embedding.transform(frames_b_Bcells2)
+end = time. time()
+print("------------UMAP embedding finished, embedding time = ------------------")
+print(end - start)
+
+
+##############################################################################################
+
+from bokeh.palettes import Oranges
+
+bloodembedding_df_test5 = pd.DataFrame(test_embedding5, columns=('x', 'y'))
+bloodembedding_df_test5['digit'] = [str(x) for x in all_labels_Bcells2]
+bloodembedding_df_test5['image'] = list(map(embeddable_image, reshaped_Bcells2))
+
+output_file("Bcells2.html")
+datasource5 = ColumnDataSource(bloodembedding_df_test5)
+color_mapping2 = CategoricalColorMapper(factors=['0.0'],
+                                       palette=Oranges[3])
+tooltips1="""
+<div>
+    <div>
+        <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>
+    </div>
+    <div>
+        <span style='font-size: 16px; color: #224499'>Label:</span>
+        <span style='font-size: 18px'>@digit</span>
+    </div>
+</div>
+"""
+plot_figure5 = figure(
+    title='UMAP projection of the dataset',
+    plot_width=600,
+    plot_height=600,
+    tools=('pan, wheel_zoom, reset'),
+    tooltips = tooltips1,
+    x_range=[-15, -7],
+    y_range=[-1, 9]
+    )
+
+plot_figure5.circle(
+    'x',
+    'y',
+    source=datasource5,
+    color=dict(field='digit', transform=color_mapping2),
+    line_alpha=0.6,
+    fill_alpha=0.6,
+    size=4
+    )
+
+show(plot_figure5)
+
+#
+###############################################################################################
+################################### new embedding - 1 point #############################################
+#
+#test=blood_image_new_flat2[0:1,:]
+#test_embedding2 = np.zeros((1,2))
+##embed and time
+#import time
+#start = time. time()
+#test_embedding2 = embedding.transform(test)
+#end = time. time()
+#print("------------UMAP embedding finished, embedding time = ------------------")
+#print(end - start)
